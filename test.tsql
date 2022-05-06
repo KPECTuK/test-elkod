@@ -1,0 +1,113 @@
+USE master
+DROP DATABASE IF EXISTS test_elkod
+GO
+
+CREATE DATABASE test_elkod
+GO
+
+USE test_elkod
+
+DECLARE @idThread_00 uniqueidentifier = NEWID();
+DECLARE @idThread_01 uniqueidentifier = NEWID();
+DECLARE @idThread_02 uniqueidentifier = NEWID();
+DECLARE @idThread_03 uniqueidentifier = NEWID();
+DECLARE @idClient_00 uniqueidentifier = NEWID();
+DECLARE @idClient_01 uniqueidentifier = NEWID();
+DECLARE @idClient_02 uniqueidentifier = NEWID();
+DECLARE @idClient_03 uniqueidentifier = NEWID();
+
+CREATE 
+  TABLE dbo.Requests (
+    id UNIQUEIDENTIFIER NOT NULL
+  , idThread UNIQUEIDENTIFIER NOT NULL
+  , idClient UNIQUEIDENTIFIER NOT NULL )
+
+--! 
+
+INSERT INTO dbo.Requests VALUES (
+  @idThread_00
+, @idThread_00
+, @idClient_00 )
+INSERT INTO dbo.Requests VALUES (
+  NEWID()
+, @idThread_00
+, @idClient_00 )
+-- INSERT INTO dbo.Requests VALUES (
+--   NEWID()
+-- , @idThread_00
+-- , @idClient_00 )
+
+--!
+
+INSERT INTO dbo.Requests VALUES (
+  @idThread_01
+, @idThread_01
+, @idClient_00 )
+-- INSERT INTO dbo.Requests VALUES (
+--   NEWID()
+-- , @idThread_01
+-- , @idClient_00 )
+-- INSERT INTO dbo.Requests VALUES (
+--   NEWID()
+-- , @idThread_01
+-- , @idClient_00 )
+
+--! 
+
+INSERT INTO dbo.Requests VALUES (
+  @idThread_02
+, @idThread_02
+, @idClient_01 )
+INSERT INTO dbo.Requests VALUES (
+  NEWID()
+, @idThread_02
+, @idClient_01 )
+INSERT INTO dbo.Requests VALUES (
+  NEWID()
+, @idThread_02
+, @idClient_01 )
+
+--! 
+
+INSERT INTO dbo.Requests VALUES (
+  @idThread_03
+, @idThread_03
+, @idClient_03 )
+-- INSERT INTO dbo.Requests VALUES (
+--   NEWID()
+-- , @idThread_03
+-- , @idClient_03 )
+-- INSERT INTO dbo.Requests VALUES (
+--   NEWID()
+-- , @idThread_03
+-- , @idClient_03 )
+
+CREATE 
+  TABLE dbo.Clients (
+    id UNIQUEIDENTIFIER NOT NULL
+  , [name] VARCHAR(MAX) NOT NULL )
+
+INSERT INTO dbo.Clients VALUES (
+  @idClient_00
+, 'name_00' )
+INSERT INTO dbo.Clients VALUES (
+  @idClient_01
+, 'name_01' )
+INSERT INTO dbo.Clients VALUES (
+  @idClient_02
+, 'name_02' )
+INSERT INTO dbo.Clients VALUES (
+  @idClient_03
+, 'name_03' )
+
+SELECT * FROM Clients
+SELECT * FROM Requests
+
+SELECT idClient, [name]
+FROM (
+  SELECT DISTINCT q.idClient AS idClient
+  FROM Requests AS q 
+  GROUP BY q.idClient, q.idThread
+  HAVING COUNT( q.idThread ) < 3 ) AS r
+JOIN Clients c
+ON c.id = r.idClient
